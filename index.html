@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Liz Ferreiro Vega</title>
+<meta name="description" content="HPC and Systems Engineer. Slurm, OpenHPC, Linux, Kubernetes and self-hosted AI infrastructure.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Fraunces:opsz,wght@9..144,400;9..144,600&display=swap" rel="stylesheet">
+<style>
+  /* Layout idea: calm editorial page. A sticky section title on the left, content on the right.
+     One accent (deep rose), soft blush panels, plum text. One light world. */
+  :root {
+    --bg: #fffafb;
+    --surface: #ffffff;
+    --blush: #fbeaef;
+    --rose-soft: #f4c9d6;
+    --rose: #b8325f;
+    --rose-deep: #8f2349;
+    --ink: #2b1a24;
+    --muted: #6b5560;
+    --line: #ecdce2;
+    --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+    --font-body: "DM Sans", "Helvetica Neue", Arial, sans-serif;
+    color-scheme: light;
+  }
+
+  * { box-sizing: border-box; }
+  html { background: var(--bg); }
+  @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 18px; line-height: 1.7; }
+  a { color: var(--rose); text-underline-offset: 4px; }
+  a:hover { color: var(--rose-deep); }
+  :focus-visible { outline: 3px solid var(--rose); outline-offset: 3px; border-radius: 6px; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+  section[id], main[id] { scroll-margin-top: 72px; }
+
+  /* Header */
+  header.top { position: sticky; top: 0; z-index: 10; background: rgba(255, 250, 251, 0.94); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+  .top-in { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 64px; }
+  .brand { font-family: var(--font-display); font-weight: 600; font-size: 19px; color: var(--ink); text-decoration: none; letter-spacing: -0.01em; }
+  nav.links { display: none; gap: 26px; font-size: 16px; }
+  nav.links a { color: var(--muted); text-decoration: none; padding: 6px 0; border-bottom: 2px solid transparent; transition: color .15s, border-color .15s; }
+  nav.links a:hover { color: var(--ink); }
+  nav.links a[aria-current="true"] { color: var(--ink); border-bottom-color: var(--rose); }
+  .lang { display: flex; gap: 4px; }
+  .lang button { font: 500 14px var(--font-body); color: var(--muted); background: transparent; border: 1px solid transparent; border-radius: 999px; padding: 6px 12px; cursor: pointer; transition: background .15s, color .15s; }
+  .lang button:hover { background: var(--blush); color: var(--ink); }
+  .lang button[aria-pressed="true"] { background: var(--blush); color: var(--rose-deep); border-color: var(--rose-soft); font-weight: 700; }
+  @media (min-width: 900px) { nav.links { display: flex; } }
+
+  /* Hero */
+  .hero { display: grid; gap: 40px; grid-template-columns: 1fr; align-items: center; padding-top: 56px; padding-bottom: 72px; }
+  @media (min-width: 900px) { .hero { grid-template-columns: 1.15fr 1fr; gap: 56px; padding-top: 88px; padding-bottom: 104px; } }
+  .eyebrow { font-weight: 700; font-size: 15px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rose); margin: 0 0 18px; }
+  h1 { font-family: var(--font-display); font-weight: 600; font-size: clamp(46px, 7.4vw, 84px); line-height: 1.02; letter-spacing: -0.025em; margin: 0 0 24px; text-wrap: balance; }
+  .tagline { font-size: clamp(19px, 2.2vw, 23px); line-height: 1.55; color: var(--ink); max-width: 30em; margin: 0 0 22px; }
+  .status { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 16px; margin: 0 0 30px; }
+  .status::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--rose); flex: none; }
+  .cta { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn { display: inline-block; font: 500 16px var(--font-body); text-decoration: none; padding: 13px 26px; border-radius: 999px; border: 1px solid var(--rose); cursor: pointer; transition: background .15s, color .15s, transform .15s; }
+  .btn:hover { transform: translateY(-1px); }
+  .btn.primary { background: var(--rose); color: #fff; }
+  .btn.primary:hover { background: var(--rose-deep); color: #fff; }
+  .btn.ghost { background: transparent; color: var(--rose-deep); }
+  .btn.ghost:hover { background: var(--blush); color: var(--rose-deep); }
+
+  .art { background: var(--blush); border-radius: 28px; padding: 12px; max-width: 460px; width: 100%; margin: 0 auto; }
+  .art svg { width: 100%; height: auto; display: block; }
+  .art .net line { stroke: var(--ink); stroke-opacity: 0.28; stroke-width: 1.5; }
+  .art .node circle { fill: var(--surface); stroke: var(--ink); stroke-width: 1.8; transition: r .18s ease, fill .18s ease; }
+  .art .node text { font: 500 13px var(--font-body); fill: var(--muted); text-anchor: middle; transition: fill .18s; }
+  .art .node:hover circle, .art .node:focus circle { r: 15; fill: var(--rose); stroke: var(--rose-deep); }
+  .art .node:hover text, .art .node:focus text { fill: var(--ink); font-weight: 700; }
+  .art .node { outline: none; cursor: default; }
+  .art .node:focus-visible circle { stroke-width: 4; }
+  .art .core circle { fill: var(--rose); stroke: var(--rose-deep); stroke-width: 2; }
+  .art .core text { font: 700 14px var(--font-body); fill: #fff; text-anchor: middle; }
+
+  /* Sections */
+  section { padding: 84px 0; border-top: 1px solid var(--line); }
+  .sec { display: grid; gap: 28px; grid-template-columns: 1fr; }
+  @media (min-width: 900px) { .sec { grid-template-columns: 230px 1fr; gap: 56px; } .sec > h2 { position: sticky; top: 100px; align-self: start; } }
+  h2 { font-family: var(--font-display); font-weight: 600; font-size: clamp(30px, 3.6vw, 40px); line-height: 1.1; letter-spacing: -0.02em; margin: 0; text-wrap: balance; hyphens: auto; overflow-wrap: break-word; }
+  .lead { font-size: clamp(21px, 2.4vw, 26px); line-height: 1.55; margin: 0 0 22px; max-width: 34em; text-wrap: pretty; }
+  .body-text { margin: 0; max-width: 38em; color: var(--ink); }
+  .sub { margin: 0 0 8px; color: var(--muted); max-width: 40em; }
+
+  /* Stack */
+  .rows { display: grid; }
+  .row { display: grid; gap: 8px 24px; grid-template-columns: 1fr; padding: 18px 0; border-top: 1px solid var(--line); }
+  .row:last-child { border-bottom: 1px solid var(--line); }
+  @media (min-width: 640px) { .row { grid-template-columns: 150px 1fr; align-items: baseline; } }
+  .row h3 { font-family: var(--font-display); font-weight: 600; font-size: 19px; margin: 0; letter-spacing: -0.01em; }
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+  .tags li { background: var(--blush); color: var(--ink); border-radius: 999px; padding: 3px 14px; font-size: 16px; transition: background .15s; }
+  .tags li:hover { background: var(--rose-soft); }
+
+  /* Experience */
+  .job { display: grid; gap: 6px 32px; grid-template-columns: 1fr; padding: 28px 0; border-top: 1px solid var(--line); }
+  .job:first-child { border-top: 0; padding-top: 0; }
+  @media (min-width: 700px) { .job { grid-template-columns: 190px 1fr; } }
+  .job .meta { color: var(--muted); font-size: 16px; line-height: 1.5; }
+  .job .meta strong { display: block; color: var(--ink); font-weight: 700; font-size: 17px; }
+  .job h3 { font-family: var(--font-display); font-weight: 600; font-size: clamp(22px, 2.6vw, 26px); line-height: 1.2; letter-spacing: -0.015em; margin: 0 0 12px; }
+  .job ul { margin: 0; padding-left: 20px; display: grid; gap: 12px; }
+  .job li::marker { color: var(--rose); }
+  .job li[hidden] { display: none; }
+  .more { margin-top: 16px; background: none; border: 0; padding: 0; font: 700 16px var(--font-body); color: var(--rose); cursor: pointer; text-decoration: underline; text-underline-offset: 4px; }
+  .more:hover { color: var(--rose-deep); }
+
+  /* Cards */
+  .cards { display: grid; gap: 20px; grid-template-columns: 1fr; }
+  @media (min-width: 700px) { .cards { grid-template-columns: 1fr 1fr; } }
+  .card { background: var(--blush); border-radius: 20px; padding: 28px; display: flex; flex-direction: column; gap: 10px; transition: transform .2s, box-shadow .2s; }
+  .card:hover { transform: translateY(-3px); box-shadow: 0 14px 30px rgba(43, 26, 36, 0.09); }
+  .card h3 { font-family: var(--font-display); font-weight: 600; font-size: 24px; margin: 0; letter-spacing: -0.015em; line-height: 1.2; word-break: break-word; }
+  .card p { margin: 0; }
+  .card a.go { margin-top: auto; padding-top: 10px; font-weight: 700; text-decoration: none; }
+  .card a.go:hover { text-decoration: underline; }
+
+  .items { display: grid; }
+  .item { padding: 20px 0; border-top: 1px solid var(--line); display: grid; gap: 4px; }
+  .item:last-child { border-bottom: 1px solid var(--line); }
+  .item h3 { font-family: var(--font-display); font-weight: 600; font-size: 21px; margin: 0; letter-spacing: -0.01em; line-height: 1.25; }
+  .item p { margin: 0; color: var(--muted); font-size: 17px; line-height: 1.55; }
+  .subhead { font-family: var(--font-display); font-weight: 600; font-size: 24px; margin: 44px 0 6px; letter-spacing: -0.015em; }
+
+  /* Contact */
+  section.contact { background: var(--ink); color: #f8ecf0; border-top: 0; }
+  section.contact h2 { color: #fff; }
+  .big { font-family: var(--font-display); font-weight: 600; font-size: clamp(40px, 7vw, 76px); line-height: 1.04; letter-spacing: -0.025em; margin: 0 0 18px; color: #fff; }
+  .contact .sub { color: #d9c3cc; margin: 0 0 26px; font-size: 19px; }
+  .mailrow { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 30px; }
+  .mail { font-family: var(--font-display); font-weight: 600; font-size: clamp(20px, 3.4vw, 34px); color: #fff; text-decoration-color: var(--rose-soft); text-decoration-thickness: 2px; text-underline-offset: 6px; word-break: break-all; }
+  .mail:hover { color: var(--rose-soft); }
+  .copy { font: 500 15px var(--font-body); color: #f8ecf0; background: transparent; border: 1px solid #6d5560; border-radius: 999px; padding: 7px 16px; cursor: pointer; transition: background .15s, border-color .15s; }
+  .copy:hover { background: #3d2a35; border-color: var(--rose-soft); }
+  .contact .btn.primary { background: var(--rose-soft); color: var(--ink); border-color: var(--rose-soft); }
+  .contact .btn.primary:hover { background: #fff; color: var(--ink); }
+  .contact .btn.ghost { color: #f8ecf0; border-color: #6d5560; }
+  .contact .btn.ghost:hover { background: #3d2a35; color: #fff; }
+  footer { margin-top: 64px; padding-top: 22px; border-top: 1px solid #4a3541; font-size: 15px; color: #bda6b0; }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap top-in">
+    <a class="brand" href="#top" data-nav="top">Liz Ferreiro Vega</a>
+    <nav class="links" aria-label="Sections">
+      <a href="#about" data-nav="about" data-i18n="nav_about">About</a>
+      <a href="#stack" data-nav="stack" data-i18n="nav_stack">Stack</a>
+      <a href="#experience" data-nav="experience" data-i18n="nav_experience">Experience</a>
+      <a href="#projects" data-nav="projects" data-i18n="nav_projects">Projects</a>
+      <a href="#credentials" data-nav="credentials" data-i18n="nav_credentials">Credentials</a>
+      <a href="#contact" data-nav="contact" data-i18n="nav_contact">Contact</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-lang="en" aria-pressed="true">EN</button>
+      <button type="button" data-lang="fr" aria-pressed="false">FR</button>
+      <button type="button" data-lang="de" aria-pressed="false">DE</button>
+      <button type="button" data-lang="es" aria-pressed="false">ES</button>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+  <div class="wrap hero">
+    <div>
+      <p class="eyebrow" data-i18n="hero_role">HPC &amp; Systems Engineering</p>
+      <h1>Liz Ferreiro Vega</h1>
+      <p class="tagline" data-i18n="hero_tagline">I build and run HPC clusters and the AI infrastructure that runs on them.</p>
+      <p class="status" data-i18n="hero_status">Granada, Spain</p>
+      <div class="cta">
+        <a class="btn primary" href="#contact" data-nav="contact" data-i18n="cta_contact">Contact me</a>
+        <a class="btn ghost" href="https://github.com/lizzfv">GitHub</a>
+      </div>
+    </div>
+    <div class="art">
+      <svg viewBox="0 0 420 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Network of HPC building blocks: Slurm, Kubernetes, Lustre, Ansible, Prometheus and vLLM around a central HPC node">
+        <circle cx="210" cy="210" r="168" fill="#f4c9d6" fill-opacity="0.55"/>
+        <g class="net">
+          <line x1="210" y1="210" x2="92" y2="104"/>
+          <line x1="210" y1="210" x2="330" y2="96"/>
+          <line x1="210" y1="210" x2="362" y2="226"/>
+          <line x1="210" y1="210" x2="318" y2="342"/>
+          <line x1="210" y1="210" x2="104" y2="338"/>
+          <line x1="210" y1="210" x2="58" y2="226"/>
+          <line x1="92" y1="104" x2="330" y2="96"/>
+          <line x1="330" y1="96" x2="362" y2="226"/>
+          <line x1="362" y1="226" x2="318" y2="342"/>
+          <line x1="318" y1="342" x2="104" y2="338"/>
+          <line x1="104" y1="338" x2="58" y2="226"/>
+          <line x1="58" y1="226" x2="92" y2="104"/>
+        </g>
+        <g class="core"><circle cx="210" cy="210" r="30"/><text x="210" y="215">HPC</text></g>
+        <g class="node" tabindex="0"><rect class="hit" x="50" y="82" width="84" height="66" fill="transparent"/><circle cx="92" cy="104" r="11"/><text x="92" y="138">Slurm</text></g>
+        <g class="node" tabindex="0"><rect class="hit" x="288" y="74" width="84" height="66" fill="transparent"/><circle cx="330" cy="96" r="11"/><text x="330" y="130">Kubernetes</text></g>
+        <g class="node" tabindex="0"><rect class="hit" x="320" y="204" width="84" height="66" fill="transparent"/><circle cx="362" cy="226" r="11"/><text x="362" y="260">Lustre</text></g>
+        <g class="node" tabindex="0"><rect class="hit" x="276" y="320" width="84" height="66" fill="transparent"/><circle cx="318" cy="342" r="11"/><text x="318" y="376">Ansible</text></g>
+        <g class="node" tabindex="0"><rect class="hit" x="62" y="316" width="84" height="66" fill="transparent"/><circle cx="104" cy="338" r="11"/><text x="104" y="372">Prometheus</text></g>
+        <g class="node" tabindex="0"><rect class="hit" x="16" y="204" width="84" height="66" fill="transparent"/><circle cx="58" cy="226" r="11"/><text x="58" y="260">vLLM</text></g>
+      </svg>
+    </div>
+  </div>
+
+  <section id="about">
+    <div class="wrap sec">
+      <h2 data-i18n="about_title">About</h2>
+      <div>
+        <p class="lead" data-i18n="about_p1">I deploy and operate production High Performance Computing clusters end to end: PXE bare-metal provisioning, Slurm scheduling, the scientific software stack and the portals researchers use.</p>
+        <p class="body-text" data-i18n="about_p2">I have expanded an AI/HPC cluster and built self-hosted LLM infrastructure on GPU nodes. I also bring Linux administration, Kubernetes, distributed storage, monitoring, security hardening and pre-sales technical proposals.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="stack">
+    <div class="wrap sec">
+      <h2 data-i18n="stack_title">Stack</h2>
+      <div>
+        <p class="sub" data-i18n="stack_sub">The tools I work with every day.</p>
+        <div class="rows">
+          <div class="row"><h3>HPC</h3><ul class="tags"><li>Slurm</li><li>OpenHPC</li><li>Warewulf</li><li>Open OnDemand</li><li>Lmod</li><li>EasyBuild</li><li>OpenMPI</li></ul></div>
+          <div class="row"><h3>AI</h3><ul class="tags"><li>vLLM</li><li>Ollama</li><li>Open WebUI</li><li>LiteLLM</li><li>CUDA</li></ul></div>
+          <div class="row"><h3>DevOps</h3><ul class="tags"><li>Ansible</li><li>Git</li><li>Bash</li><li>Python</li><li>Docker</li></ul></div>
+          <div class="row"><h3>Kubernetes</h3><ul class="tags"><li>Kubernetes</li><li>Rancher</li></ul></div>
+          <div class="row"><h3>Storage</h3><ul class="tags"><li>Lustre</li><li>Ceph</li><li>Longhorn</li><li>NFS</li></ul></div>
+          <div class="row"><h3>Network</h3><ul class="tags"><li>InfiniBand</li><li>VLANs</li><li>OpenVPN</li><li>Tailscale</li></ul></div>
+          <div class="row"><h3>Monitoring</h3><ul class="tags"><li>Prometheus</li><li>Grafana</li><li>CheckMK</li><li>Zabbix</li></ul></div>
+          <div class="row"><h3>Cloud</h3><ul class="tags"><li>Google Cloud</li><li>Proxmox</li><li>OpenNebula</li><li>KVM</li></ul></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="experience">
+    <div class="wrap sec">
+      <h2 data-i18n="exp_title">Experience</h2>
+      <div>
+        <article class="job">
+          <div class="meta"><strong>Exeliz Solutions</strong><span data-i18n="e1_when">Nov 2025 – Present</span><br>Granada</div>
+          <div>
+            <h3 data-i18n="e1_role">Systems Administrator, HPC and DevOps</h3>
+            <ul id="e1-list">
+              <li data-i18n="e1_b1">Worked on the expansion of an AI/HPC cluster: NVIDIA DGX B200, new compute nodes, InfiniBand NDR, Lustre in high availability, and a migration to Rocky Linux with OpenHPC and Slurm HA, automated with Ansible.</li>
+              <li data-i18n="e1_b2">Deploy HPC clusters end to end with Warewulf and OpenHPC: PXE provisioning, container images, and the scientific stack (GNU, Intel and AOCC compilers, OpenMPI, HDF5, NetCDF, Lmod, EasyBuild).</li>
+              <li data-i18n="e1_b3">Administer Slurm with primary and backup controllers, accounting and LDAP, plus the Open OnDemand web portal.</li>
+              <li class="extra" data-i18n="e1_b4">Deployed AI infrastructure on cluster nodes: self-hosted LLMs, agent tooling (OpenCode, LiteLLM) and Open WebUI, with GPU node integration for research users.</li>
+              <li class="extra" data-i18n="e1_b5">Run monitoring (CheckMK, Zabbix), high availability (Corosync) and internal infrastructure: OpenVPN, Tailscale, a hardened VPS, and the OpenNebula network design.</li>
+            </ul>
+            <button type="button" class="more" id="more-btn" aria-expanded="false" aria-controls="e1-list">Show more</button>
+          </div>
+        </article>
+        <article class="job">
+          <div class="meta"><strong>Nanobytes</strong><span data-i18n="e2_when">Jun – Sep 2025</span><br>Granada</div>
+          <div>
+            <h3 data-i18n="intern_role">Systems Administrator Intern</h3>
+            <ul>
+              <li data-i18n="e2_b1">Deployed and managed Kubernetes clusters with Rancher, including networking and access control.</li>
+              <li data-i18n="e2_b2">Configured distributed storage with Longhorn and Ceph, built monitoring with Prometheus and Grafana, and automated deployments with Docker.</li>
+            </ul>
+          </div>
+        </article>
+        <article class="job">
+          <div class="meta"><strong>Exeliz Solutions</strong><span data-i18n="e3_when">Apr – Sep 2024</span><br>Granada</div>
+          <div>
+            <h3 data-i18n="intern_role2">Systems Administrator Intern</h3>
+            <ul>
+              <li data-i18n="e3_b1">Administered production Linux servers (Ubuntu, CentOS) and set up PXE bare-metal provisioning for Ceph storage nodes.</li>
+              <li data-i18n="e3_b2">Supported OpenHPC cluster setup and InfiniBand network infrastructure.</li>
+            </ul>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="projects">
+    <div class="wrap sec">
+      <h2 data-i18n="proj_title">Projects</h2>
+      <div class="cards">
+        <div class="card">
+          <h3 data-i18n="p3_title">AI/HPC cluster expansion</h3>
+          <p data-i18n="p3_desc">Expansion of a research cluster: NVIDIA DGX B200 system, new compute nodes, InfiniBand NDR and Lustre in high availability, with a migration to Rocky Linux, OpenHPC and Slurm HA, automated with Ansible.</p>
+        </div>
+        <div class="card">
+          <h3 data-i18n="p4_title">HPC cluster in Finland</h3>
+          <p data-i18n="p4_desc">A research HPC installation in Finland, together with Fujitsu. The scope covers Warewulf provisioning, Slurm, Open OnDemand, directory services, monitoring and parallel storage, with remote installation and support.</p>
+        </div>
+        <div class="card">
+          <h3 data-i18n="p5_title">Self-hosted LLM platform</h3>
+          <p data-i18n="p5_desc">Self-hosted language models on GPU nodes for research users, with OpenCode, LiteLLM and Open WebUI, plus reproducible KVM and Warewulf test environments built by automation.</p>
+        </div>
+        <div class="card">
+          <h3>DiSQL</h3>
+          <p data-i18n="p6_desc">My final degree project: a distributed SQL engine that runs one query across MariaDB, PostgreSQL and Oracle, translating dialects with sqlglot, with a modular architecture and a Flask web interface.</p>
+          <a class="go" href="https://github.com/lizzfv/disql"><span data-i18n="p_link">View on GitHub</span> →</a>
+        </div>
+        <div class="card">
+          <h3>hpc-cluster-ansible</h3>
+          <p data-i18n="p1_desc">Ansible roles that turn a few Rocky Linux machines into a small Slurm cluster: NFS shared storage, MUNGE authentication, SSH hardening and Prometheus node_exporter. Tested on Proxmox VMs and checked with ansible-lint at its strictest profile.</p>
+          <a class="go" href="https://github.com/lizzfv/hpc-cluster-ansible"><span data-i18n="p_link">View on GitHub</span> →</a>
+        </div>
+        <div class="card">
+          <h3 data-i18n="p2_title">Corporate website</h3>
+          <p data-i18n="p2_desc">Bilingual (Spanish and English) corporate website for Exeliz Solutions, built with Astro and with help from AI agents.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="credentials">
+    <div class="wrap sec">
+      <h2 data-i18n="cred_title">Credentials</h2>
+      <div>
+        <div class="items">
+          <div class="item"><h3>Google Cloud Computing Foundations</h3><p data-i18n="c1_desc">Three badges on Google Skills (2026): Cloud Computing Fundamentals; Infrastructure in Google Cloud; Networking &amp; Security in Google Cloud.</p></div>
+          <div class="item"><h3>Cambridge English C1</h3><p data-i18n="c2_desc">Certificate of English Full Professional Proficiency, University of Cambridge, 2021.</p></div>
+          <div class="item"><h3>Cilium Network Policies</h3><p>Isovalent, 2024</p></div>
+        </div>
+        <h3 class="subhead" data-i18n="edu_title">Education</h3>
+        <div class="items">
+          <div class="item"><h3 data-i18n="edu_degree">Degree in Computer Engineering</h3><p><span data-i18n="edu_school">University of Granada · 2021 – 2026</span> · <span data-i18n="edu_thesis">Final-year thesis defended in May 2026</span></p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="contact">
+    <div class="wrap">
+      <p class="big" data-i18n="contact_big">Let's talk.</p>
+      <p class="sub" data-i18n="contact_sub">Questions, ideas or collaboration are always welcome.</p>
+      <div class="mailrow">
+        <a class="mail" id="mail" href="mailto:lizferreirov@gmail.com">lizferreirov@gmail.com</a>
+        <button type="button" class="copy" id="copy-btn">Copy</button>
+        <span id="copy-status" class="sr" role="status" aria-live="polite" style="position:absolute;left:-9999px;"></span>
+      </div>
+      <div class="cta">
+        <a class="btn primary" href="https://linkedin.com/in/liz-ferreiro-vega">LinkedIn</a>
+        <a class="btn ghost" href="https://github.com/lizzfv">GitHub</a>
+      </div>
+      <footer>© 2026 Liz Ferreiro Vega</footer>
+    </div>
+  </section>
+</main>
+
+<script>
+(function () {
+  var I18N = {
+    en: {
+      title: "Liz Ferreiro Vega",
+      desc: "HPC and Systems Engineer. Slurm, OpenHPC, Linux, Kubernetes and self-hosted AI infrastructure.",
+      nav_about: "About", nav_stack: "Stack", nav_experience: "Experience", nav_projects: "Projects", nav_credentials: "Credentials", nav_contact: "Contact",
+      hero_role: "HPC & Systems Engineering",
+      hero_tagline: "I build and run HPC clusters and the AI infrastructure that runs on them.",
+      hero_status: "Granada, Spain",
+      cta_contact: "Contact me",
+      about_title: "About",
+      about_p1: "I deploy and operate production High Performance Computing clusters end to end: PXE bare-metal provisioning, Slurm scheduling, the scientific software stack and the portals researchers use.",
+      about_p2: "I have expanded an AI/HPC cluster and built self-hosted LLM infrastructure on GPU nodes. I also bring Linux administration, Kubernetes, distributed storage, monitoring, security hardening and pre-sales technical proposals.",
+      stack_title: "Stack",
+      stack_sub: "The tools I work with every day.",
+      exp_title: "Experience",
+      e1_when: "Nov 2025 – Present",
+      e1_role: "Systems Administrator, HPC and DevOps",
+      e1_b1: "Worked on the expansion of an AI/HPC cluster: NVIDIA DGX B200, new compute nodes, InfiniBand NDR, Lustre in high availability, and a migration to Rocky Linux with OpenHPC and Slurm HA, automated with Ansible.",
+      e1_b2: "Deploy HPC clusters end to end with Warewulf and OpenHPC: PXE provisioning, container images, and the scientific stack (GNU, Intel and AOCC compilers, OpenMPI, HDF5, NetCDF, Lmod, EasyBuild).",
+      e1_b3: "Administer Slurm with primary and backup controllers, accounting and LDAP, plus the Open OnDemand web portal.",
+      e1_b4: "Deployed AI infrastructure on cluster nodes: self-hosted LLMs, agent tooling (OpenCode, LiteLLM) and Open WebUI, with GPU node integration for research users.",
+      e1_b5: "Run monitoring (CheckMK, Zabbix), high availability (Corosync) and internal infrastructure: OpenVPN, Tailscale, a hardened VPS, and the OpenNebula network design.",
+      show_more: "Show more", show_less: "Show less",
+      e2_when: "Jun – Sep 2025",
+      intern_role: "Systems Administrator Intern",
+      e2_b1: "Deployed and managed Kubernetes clusters with Rancher, including networking and access control.",
+      e2_b2: "Configured distributed storage with Longhorn and Ceph, built monitoring with Prometheus and Grafana, and automated deployments with Docker.",
+      e3_when: "Apr – Sep 2024",
+      intern_role2: "Systems Administrator Intern",
+      e3_b1: "Administered production Linux servers (Ubuntu, CentOS) and set up PXE bare-metal provisioning for Ceph storage nodes.",
+      e3_b2: "Supported OpenHPC cluster setup and InfiniBand network infrastructure.",
+      proj_title: "Projects",
+      p1_desc: "Ansible roles that turn a few Rocky Linux machines into a small Slurm cluster: NFS shared storage, MUNGE authentication, SSH hardening and Prometheus node_exporter. Tested on Proxmox VMs and checked with ansible-lint at its strictest profile.",
+      p_link: "View on GitHub",
+      p2_title: "Corporate website",
+      p2_desc: "Bilingual (Spanish and English) corporate website for Exeliz Solutions, built with Astro and with help from AI agents.",
+      p3_title: "AI/HPC cluster expansion",
+      p3_desc: "Expansion of a research cluster: NVIDIA DGX B200 system, new compute nodes, InfiniBand NDR and Lustre in high availability, with a migration to Rocky Linux, OpenHPC and Slurm HA, automated with Ansible.",
+      p4_title: "HPC cluster in Finland",
+      p4_desc: "A research HPC installation in Finland, together with Fujitsu. The scope covers Warewulf provisioning, Slurm, Open OnDemand, directory services, monitoring and parallel storage, with remote installation and support.",
+      p5_title: "Self-hosted LLM platform",
+      p5_desc: "Self-hosted language models on GPU nodes for research users, with OpenCode, LiteLLM and Open WebUI, plus reproducible KVM and Warewulf test environments built by automation.",
+      p6_desc: "My final degree project: a distributed SQL engine that runs one query across MariaDB, PostgreSQL and Oracle, translating dialects with sqlglot, with a modular architecture and a Flask web interface.",
+      cred_title: "Credentials",
+      c1_desc: "Three badges on Google Skills (2026): Cloud Computing Fundamentals; Infrastructure in Google Cloud; Networking & Security in Google Cloud.",
+      c2_desc: "Certificate of English Full Professional Proficiency, University of Cambridge, 2021.",
+      edu_title: "Education",
+      edu_degree: "Degree in Computer Engineering",
+      edu_school: "University of Granada · 2021 – 2026",
+      edu_thesis: "Final-year thesis defended in May 2026",
+      contact_big: "Let's talk.",
+      contact_sub: "Questions, ideas or collaboration are always welcome.",
+      copy: "Copy", copied: "Copied"
+    },
+    fr: {
+      title: "Liz Ferreiro Vega",
+      desc: "Ingénieure systèmes et HPC. Slurm, OpenHPC, Linux, Kubernetes et infrastructure d'IA auto-hébergée.",
+      nav_about: "À propos", nav_stack: "Stack", nav_experience: "Expérience", nav_projects: "Projets", nav_credentials: "Certifications", nav_contact: "Contact",
+      hero_role: "Ingénieure systèmes et HPC",
+      hero_tagline: "Je construis et j'exploite des clusters de calcul haute performance et l'infrastructure d'IA qui tourne dessus.",
+      hero_status: "Grenade, Espagne",
+      cta_contact: "Me contacter",
+      about_title: "À propos",
+      about_p1: "Je déploie et j'exploite des clusters de calcul haute performance en production, de A à Z : installation des serveurs par le réseau (PXE), gestion des jobs avec Slurm, logiciels scientifiques et portails utilisés par les chercheurs.",
+      about_p2: "J'ai étendu un cluster IA/HPC et mis en place une infrastructure de LLM auto-hébergés sur des nœuds GPU. Je travaille aussi sur Linux, Kubernetes, le stockage distribué, la supervision, la sécurité et des propositions techniques avant-vente.",
+      stack_title: "Stack",
+      stack_sub: "Les outils avec lesquels je travaille au quotidien.",
+      exp_title: "Expérience",
+      e1_when: "nov. 2025 – aujourd'hui",
+      e1_role: "Administratrice systèmes, HPC et DevOps",
+      e1_b1: "J'ai participé à l'extension d'un cluster IA/HPC : NVIDIA DGX B200, nouveaux nœuds de calcul, InfiniBand NDR, Lustre en haute disponibilité et migration vers Rocky Linux avec OpenHPC et Slurm HA, le tout automatisé avec Ansible.",
+      e1_b2: "Je déploie des clusters HPC complets avec Warewulf et OpenHPC : installation par PXE, images de nœuds et logiciels scientifiques (compilateurs GNU, Intel et AOCC, OpenMPI, HDF5, NetCDF, Lmod, EasyBuild).",
+      e1_b3: "J'administre Slurm avec contrôleur principal et de secours, comptabilité et LDAP, ainsi que le portail web Open OnDemand.",
+      e1_b4: "J'ai déployé une infrastructure d'IA sur les nœuds du cluster : LLM auto-hébergés, outils d'agents (OpenCode, LiteLLM) et Open WebUI, avec les nœuds GPU intégrés pour les chercheurs.",
+      e1_b5: "Je gère la supervision (CheckMK, Zabbix), la haute disponibilité (Corosync) et l'infrastructure interne : OpenVPN, Tailscale, un VPS durci et la conception du réseau OpenNebula.",
+      show_more: "Voir plus", show_less: "Voir moins",
+      e2_when: "juin – sept. 2025",
+      intern_role: "Stagiaire en administration systèmes",
+      e2_b1: "J'ai déployé et géré des clusters Kubernetes avec Rancher, y compris le réseau et le contrôle d'accès.",
+      e2_b2: "J'ai configuré du stockage distribué avec Longhorn et Ceph, mis en place la supervision avec Prometheus et Grafana, et automatisé les déploiements avec Docker.",
+      e3_when: "avr. – sept. 2024",
+      intern_role2: "Stagiaire en administration systèmes",
+      e3_b1: "J'ai administré des serveurs Linux en production (Ubuntu, CentOS) et mis en place l'installation par PXE de nœuds de stockage Ceph.",
+      e3_b2: "J'ai participé à la mise en place d'un cluster OpenHPC et de son réseau InfiniBand.",
+      proj_title: "Projets",
+      p1_desc: "Des rôles Ansible qui transforment quelques machines Rocky Linux en petit cluster Slurm : stockage partagé NFS, authentification MUNGE, SSH renforcé et node_exporter pour Prometheus. Testés sur des machines virtuelles Proxmox et validés avec ansible-lint au profil le plus strict.",
+      p_link: "Voir sur GitHub",
+      p2_title: "Site web d'entreprise",
+      p2_desc: "Site web d'entreprise bilingue (espagnol et anglais) pour Exeliz Solutions, réalisé avec Astro et l'aide d'agents d'IA.",
+      p3_title: "Extension d'un cluster IA/HPC",
+      p3_desc: "Extension d'un cluster de recherche : système NVIDIA DGX B200, nouveaux nœuds, InfiniBand NDR et Lustre en haute disponibilité, puis migration vers Rocky Linux avec OpenHPC et Slurm, automatisée avec Ansible.",
+      p4_title: "Cluster HPC en Finlande",
+      p4_desc: "Installation d'un cluster HPC de recherche en Finlande, avec Fujitsu. Le projet couvre Warewulf, Slurm, Open OnDemand, les services d'annuaire, la supervision et le stockage parallèle, avec installation et support à distance.",
+      p5_title: "Plateforme de LLM auto-hébergés",
+      p5_desc: "Modèles de langage auto-hébergés sur des nœuds GPU pour les chercheurs, avec OpenCode, LiteLLM et Open WebUI, et des environnements de test KVM et Warewulf créés automatiquement.",
+      p6_desc: "Mon projet de fin d'études : un moteur SQL distribué qui envoie une même requête à MariaDB, PostgreSQL et Oracle, en traduisant les dialectes avec sqlglot. Architecture modulaire et interface web Flask.",
+      cred_title: "Certifications",
+      c1_desc: "Trois badges Google Skills (2026) : Cloud Computing Fundamentals, Infrastructure in Google Cloud et Networking & Security in Google Cloud.",
+      c2_desc: "Certificate of English Full Professional Proficiency, Université de Cambridge, 2021.",
+      edu_title: "Formation",
+      edu_degree: "Diplôme en ingénierie informatique",
+      edu_school: "Université de Grenade · 2021 – 2026",
+      edu_thesis: "Projet de fin d'études soutenu en mai 2026",
+      contact_big: "Parlons-en.",
+      contact_sub: "Questions, idées ou collaborations : n'hésitez pas à m'écrire.",
+      copy: "Copier", copied: "Copié"
+    },
+    de: {
+      title: "Liz Ferreiro Vega",
+      desc: "HPC- und Systemingenieurin. Slurm, OpenHPC, Linux, Kubernetes und selbst gehostete KI-Infrastruktur.",
+      nav_about: "Über mich", nav_stack: "Stack", nav_experience: "Erfahrung", nav_projects: "Projekte", nav_credentials: "Zertifikate", nav_contact: "Kontakt",
+      hero_role: "HPC- und Systemingenieurin",
+      hero_tagline: "Ich baue und betreibe HPC-Cluster und die KI-Infrastruktur, die darauf läuft.",
+      hero_status: "Granada, Spanien",
+      cta_contact: "Kontakt aufnehmen",
+      about_title: "Über mich",
+      about_p1: "Ich richte High-Performance-Computing-Cluster für den Produktivbetrieb ein und betreibe sie: von der PXE-Installation der Server über Slurm-Scheduling bis zur wissenschaftlichen Software und den Portalen für Forschende.",
+      about_p2: "Ich habe einen KI/HPC-Cluster erweitert und selbst gehostete LLM-Infrastruktur auf GPU-Knoten aufgebaut. Außerdem arbeite ich mit Linux, Kubernetes, verteiltem Speicher, Monitoring und Security-Hardening und erstelle technische Angebote im Pre-Sales.",
+      stack_title: "Stack",
+      stack_sub: "Die Werkzeuge, mit denen ich täglich arbeite.",
+      exp_title: "Erfahrung",
+      e1_when: "Nov. 2025 – heute",
+      e1_role: "Systemadministratorin, HPC und DevOps",
+      e1_b1: "Ich war an der Erweiterung eines KI/HPC-Clusters beteiligt: NVIDIA DGX B200, neue Rechenknoten, InfiniBand NDR, Lustre mit Hochverfügbarkeit und Migration auf Rocky Linux mit OpenHPC und Slurm HA, alles mit Ansible automatisiert.",
+      e1_b2: "Ich setze komplette HPC-Cluster mit Warewulf und OpenHPC auf: PXE-Installation, Node-Images und wissenschaftliche Software (GNU-, Intel- und AOCC-Compiler, OpenMPI, HDF5, NetCDF, Lmod, EasyBuild).",
+      e1_b3: "Ich administriere Slurm mit Primär- und Backup-Controller, Accounting und LDAP sowie das Web-Portal Open OnDemand.",
+      e1_b4: "Ich habe KI-Infrastruktur auf den Cluster-Knoten aufgebaut: selbst gehostete LLMs, Agent-Tools (OpenCode, LiteLLM) und Open WebUI, mit eingebundenen GPU-Knoten für Forschende.",
+      e1_b5: "Ich betreue Monitoring (CheckMK, Zabbix), Hochverfügbarkeit (Corosync) und die interne Infrastruktur: OpenVPN, Tailscale, einen gehärteten VPS und das Netzwerkdesign für OpenNebula.",
+      show_more: "Mehr anzeigen", show_less: "Weniger anzeigen",
+      e2_when: "Juni – Sept. 2025",
+      intern_role: "Praktikum Systemadministration",
+      e2_b1: "Ich habe Kubernetes-Cluster mit Rancher bereitgestellt und verwaltet, einschließlich Netzwerk und Zugriffskontrolle.",
+      e2_b2: "Ich habe verteilten Speicher mit Longhorn und Ceph eingerichtet, Monitoring mit Prometheus und Grafana aufgebaut und Deployments mit Docker automatisiert.",
+      e3_when: "Apr. – Sept. 2024",
+      intern_role2: "Praktikum Systemadministration",
+      e3_b1: "Ich habe Linux-Produktivserver (Ubuntu, CentOS) administriert und die PXE-Installation für Ceph-Speicherknoten eingerichtet.",
+      e3_b2: "Ich habe beim Aufbau eines OpenHPC-Clusters und der InfiniBand-Netzwerkinfrastruktur mitgeholfen.",
+      proj_title: "Projekte",
+      p1_desc: "Ansible-Rollen, die ein paar Rocky-Linux-Rechner zu einem kleinen Slurm-Cluster machen: gemeinsamer NFS-Speicher, MUNGE-Authentifizierung, abgesichertes SSH und Prometheus node_exporter. Getestet auf Proxmox-VMs und mit ansible-lint im strengsten Profil geprüft.",
+      p_link: "Auf GitHub ansehen",
+      p2_title: "Unternehmenswebsite",
+      p2_desc: "Zweisprachige Unternehmenswebsite (Spanisch und Englisch) für Exeliz Solutions, gebaut mit Astro und mit Unterstützung von KI-Agenten.",
+      p3_title: "Erweiterung eines KI/HPC-Clusters",
+      p3_desc: "Erweiterung eines Forschungsclusters: NVIDIA DGX B200, neue Knoten, InfiniBand NDR und Lustre mit Hochverfügbarkeit, dazu die Migration auf Rocky Linux mit OpenHPC und Slurm, automatisiert mit Ansible.",
+      p4_title: "HPC-Cluster in Finnland",
+      p4_desc: "Eine HPC-Installation für die Forschung in Finnland, gemeinsam mit Fujitsu. Sie umfasst Warewulf, Slurm, Open OnDemand, Verzeichnisdienste, Monitoring und parallelen Speicher, mit Installation und Support aus der Ferne.",
+      p5_title: "Selbst gehostete LLM-Plattform",
+      p5_desc: "Selbst gehostete Sprachmodelle auf GPU-Knoten für Forschende, mit OpenCode, LiteLLM und Open WebUI, sowie Testumgebungen mit KVM und Warewulf, die automatisch aufgebaut werden.",
+      p6_desc: "Meine Abschlussarbeit: eine verteilte SQL-Engine, die dieselbe Abfrage an MariaDB, PostgreSQL und Oracle schickt und dabei die Dialekte mit sqlglot übersetzt. Modulare Architektur und Weboberfläche mit Flask.",
+      cred_title: "Zertifikate",
+      c1_desc: "Drei Badges auf Google Skills (2026): Cloud Computing Fundamentals, Infrastructure in Google Cloud und Networking & Security in Google Cloud.",
+      c2_desc: "Certificate of English Full Professional Proficiency, Universität Cambridge, 2021.",
+      edu_title: "Ausbildung",
+      edu_degree: "Studium der Informatik",
+      edu_school: "Universität Granada · 2021 – 2026",
+      edu_thesis: "Abschlussarbeit im Mai 2026 verteidigt",
+      contact_big: "Sprechen wir.",
+      contact_sub: "Fragen, Ideen oder Zusammenarbeit sind jederzeit willkommen.",
+      copy: "Kopieren", copied: "Kopiert"
+    },
+    es: {
+      title: "Liz Ferreiro Vega",
+      desc: "Ingeniera de sistemas y HPC. Slurm, OpenHPC, Linux, Kubernetes e infraestructura de IA en servidores propios.",
+      nav_about: "Sobre mí", nav_stack: "Stack", nav_experience: "Experiencia", nav_projects: "Proyectos", nav_credentials: "Certificaciones", nav_contact: "Contacto",
+      hero_role: "Ingeniera de sistemas y HPC",
+      hero_tagline: "Monto y mantengo clústeres de supercomputación y la infraestructura de IA que funciona sobre ellos.",
+      hero_status: "Granada, España",
+      cta_contact: "Escríbeme",
+      about_title: "Sobre mí",
+      about_p1: "Despliego y gestiono clústeres de computación de alto rendimiento (HPC) en producción, de principio a fin: instalación de servidores por red (PXE), gestión de trabajos con Slurm, el software científico y los portales que usan los investigadores.",
+      about_p2: "He ampliado un clúster de IA y HPC y he montado infraestructura de LLM en servidores propios, sobre nodos con GPU. También trabajo con Linux, Kubernetes, almacenamiento distribuido, monitorización, seguridad y propuestas técnicas de preventa.",
+      stack_title: "Stack",
+      stack_sub: "Las herramientas con las que trabajo cada día.",
+      exp_title: "Experiencia",
+      e1_when: "nov. 2025 – actualidad",
+      e1_role: "Administradora de sistemas, HPC y DevOps",
+      e1_b1: "Participé en la ampliación de un clúster de IA y HPC: NVIDIA DGX B200, nuevos nodos de cálculo, InfiniBand NDR, Lustre en alta disponibilidad y migración a Rocky Linux con OpenHPC y Slurm en alta disponibilidad, todo automatizado con Ansible.",
+      e1_b2: "Despliego clústeres HPC completos con Warewulf y OpenHPC: instalación por PXE, imágenes de nodo y software científico (compiladores GNU, Intel y AOCC, OpenMPI, HDF5, NetCDF, Lmod y EasyBuild).",
+      e1_b3: "Administro Slurm con controlador principal y de respaldo, contabilidad de uso y LDAP, y el portal web Open OnDemand.",
+      e1_b4: "Desplegué infraestructura de IA en los nodos del clúster: LLM en servidores propios, herramientas de agentes (OpenCode, LiteLLM) y Open WebUI, con los nodos GPU integrados para los investigadores.",
+      e1_b5: "Gestiono la monitorización (CheckMK, Zabbix), la alta disponibilidad (Corosync) y la infraestructura interna: OpenVPN, Tailscale, un VPS reforzado y el diseño de red de OpenNebula.",
+      show_more: "Ver más", show_less: "Ver menos",
+      e2_when: "jun. – sept. 2025",
+      intern_role: "Prácticas como administradora de sistemas",
+      e2_b1: "Desplegué y gestioné clústeres de Kubernetes con Rancher, incluida la red y el control de acceso.",
+      e2_b2: "Configuré almacenamiento distribuido con Longhorn y Ceph, monté la monitorización con Prometheus y Grafana y automaticé despliegues con Docker.",
+      e3_when: "abr. – sept. 2024",
+      intern_role2: "Prácticas como administradora de sistemas",
+      e3_b1: "Administré servidores Linux en producción (Ubuntu, CentOS) y puse en marcha la instalación por PXE de nodos de almacenamiento Ceph.",
+      e3_b2: "Ayudé a montar un clúster OpenHPC y su red InfiniBand.",
+      proj_title: "Proyectos",
+      p1_desc: "Roles de Ansible que convierten unas máquinas Rocky Linux en un pequeño clúster Slurm: almacenamiento compartido con NFS, autenticación con MUNGE, SSH reforzado y node_exporter de Prometheus. Probado en máquinas virtuales de Proxmox y revisado con ansible-lint en su perfil más estricto.",
+      p_link: "Ver en GitHub",
+      p2_title: "Web corporativa",
+      p2_desc: "Web corporativa bilingüe (español e inglés) de Exeliz Solutions, hecha con Astro y con ayuda de agentes de IA.",
+      p3_title: "Ampliación de un clúster de IA y HPC",
+      p3_desc: "Ampliación de un clúster de investigación: sistema NVIDIA DGX B200, nuevos nodos, InfiniBand NDR y Lustre en alta disponibilidad, más la migración a Rocky Linux con OpenHPC y Slurm, automatizada con Ansible.",
+      p4_title: "Clúster HPC en Finlandia",
+      p4_desc: "Instalación de un clúster HPC para investigación en Finlandia, junto con Fujitsu. Abarca Warewulf, Slurm, Open OnDemand, servicios de directorio, monitorización y almacenamiento paralelo, con instalación y soporte en remoto.",
+      p5_title: "Plataforma de LLM en infraestructura propia",
+      p5_desc: "Modelos de lenguaje que funcionan en servidores propios, sobre nodos GPU, para uso de los investigadores. Con OpenCode, LiteLLM y Open WebUI, y entornos de prueba con KVM y Warewulf que se crean de forma automática.",
+      p6_desc: "Mi trabajo de fin de grado: un motor de SQL distribuido que lanza una misma consulta sobre MariaDB, PostgreSQL y Oracle, traduciendo entre dialectos con sqlglot. Tiene arquitectura modular y una interfaz web en Flask.",
+      cred_title: "Certificaciones",
+      c1_desc: "Tres insignias de Google Skills (2026): Cloud Computing Fundamentals, Infrastructure in Google Cloud y Networking & Security in Google Cloud.",
+      c2_desc: "Certificate of English Full Professional Proficiency, Universidad de Cambridge, 2021.",
+      edu_title: "Formación",
+      edu_degree: "Grado en Ingeniería Informática",
+      edu_school: "Universidad de Granada · 2021 – 2026",
+      edu_thesis: "Trabajo de fin de grado defendido en mayo de 2026",
+      contact_big: "Hablemos.",
+      contact_sub: "Preguntas, ideas o colaboraciones: escríbeme cuando quieras.",
+      copy: "Copiar", copied: "Copiado"
+    }
+  };
+
+  var LANGS = ["en", "fr", "de", "es"];
+  var current = "en";
+  var expanded = false;
+  var copiedFlag = false;
+
+  function refreshToggle() {
+    var d = I18N[current];
+    var btn = document.getElementById("more-btn");
+    var extras = document.querySelectorAll("#e1-list .extra");
+    for (var i = 0; i < extras.length; i++) { extras[i].hidden = !expanded; }
+    btn.textContent = expanded ? d.show_less : d.show_more;
+    btn.setAttribute("aria-expanded", expanded ? "true" : "false");
+  }
+
+  function refreshCopy() {
+    var d = I18N[current];
+    document.getElementById("copy-btn").textContent = copiedFlag ? d.copied : d.copy;
+  }
+
+  function apply(lang) {
+    var d = I18N[lang];
+    current = lang;
+    document.documentElement.setAttribute("lang", lang);
+    document.title = d.title;
+    var meta = document.querySelector('meta[name="description"]');
+    if (meta) meta.setAttribute("content", d.desc);
+    var els = document.querySelectorAll("[data-i18n]");
+    for (var i = 0; i < els.length; i++) {
+      var key = els[i].getAttribute("data-i18n");
+      if (d[key] !== undefined) els[i].textContent = d[key];
+    }
+    var btns = document.querySelectorAll("[data-lang]");
+    for (var j = 0; j < btns.length; j++) {
+      btns[j].setAttribute("aria-pressed", btns[j].getAttribute("data-lang") === lang ? "true" : "false");
+    }
+    refreshToggle();
+    refreshCopy();
+  }
+
+  function setLang(lang) {
+    apply(lang);
+    try { localStorage.setItem("lang", lang); } catch (e) {}
+    try { history.replaceState(null, "", "#" + lang); } catch (e) {}
+  }
+
+  function initialLang() {
+    var h = (location.hash || "").replace("#", "");
+    if (LANGS.indexOf(h) !== -1) return h;
+    try {
+      var s = localStorage.getItem("lang");
+      if (LANGS.indexOf(s) !== -1) return s;
+    } catch (e) {}
+    return "en";
+  }
+
+  function copyEmail() {
+    var text = "lizferreirov@gmail.com";
+    function done() {
+      copiedFlag = true; refreshCopy();
+      setTimeout(function () { copiedFlag = false; refreshCopy(); }, 1800);
+    }
+    function fallback() {
+      try {
+        var ta = document.createElement("textarea");
+        ta.value = text; ta.setAttribute("readonly", "");
+        ta.style.position = "absolute"; ta.style.left = "-9999px";
+        document.body.appendChild(ta); ta.select();
+        var ok = document.execCommand("copy");
+        document.body.removeChild(ta);
+        if (ok) done();
+      } catch (e) {}
+    }
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, fallback);
+      } else { fallback(); }
+    } catch (e) { fallback(); }
+  }
+
+  document.addEventListener("click", function (ev) {
+    var b = ev.target.closest("[data-lang]");
+    if (b) { setLang(b.getAttribute("data-lang")); return; }
+    if (ev.target.closest("#more-btn")) { expanded = !expanded; refreshToggle(); return; }
+    if (ev.target.closest("#copy-btn")) { copyEmail(); return; }
+    var n = ev.target.closest("[data-nav]");
+    if (n) {
+      ev.preventDefault();
+      var id = n.getAttribute("data-nav");
+      var target = document.getElementById(id);
+      if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  });
+
+  window.addEventListener("hashchange", function () {
+    var h = (location.hash || "").replace("#", "");
+    if (LANGS.indexOf(h) !== -1 && h !== current) apply(h);
+  });
+
+  // Highlight the current section in the top menu.
+  var links = {};
+  var navLinks = document.querySelectorAll("nav.links a[data-nav]");
+  for (var i = 0; i < navLinks.length; i++) { links[navLinks[i].getAttribute("data-nav")] = navLinks[i]; }
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) {
+          for (var k in links) { links[k].removeAttribute("aria-current"); }
+          var l = links[en.target.id];
+          if (l) l.setAttribute("aria-current", "true");
+        }
+      });
+    }, { rootMargin: "-45% 0px -50% 0px" });
+    ["about", "stack", "experience", "projects", "credentials", "contact"].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) io.observe(el);
+    });
+  }
+
+  var start = initialLang();
+  apply(start);
+})();
+</script>
+</body>
+</html>
